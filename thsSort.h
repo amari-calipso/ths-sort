@@ -123,7 +123,7 @@ struct thsSort {
                 T v = array[i];
                 
                 int j = i;
-                for (; j >= k && compare(array[j - h], v) > 0; j -= h)
+                for (; j >= h + a && compare(array[j - h], v) > 0; j -= h)
                     array[j] = array[j - k];
                 array[j] = v;
             }
