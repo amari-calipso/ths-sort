@@ -73,33 +73,33 @@ struct thsSort {
             swap(array, a, b);
     }
 
-    void siftDown(T* array, int root, int dist, int start) {
+    void siftDown(T* array, int root, int dist, int a) {
         while (root <= dist / 2) {
             int leaf = 2 * root;
 
-            if (leaf < dist && compare(array[start + leaf - 1], array[start + leaf]) < 0)
+            if (leaf < dist && compare(array[a + leaf - 1], array[a + leaf]) < 0)
                 leaf++;
 
-            if (compare(array[start + root - 1], array[start + leaf - 1]) < 0) {
-                swap(array, start + root - 1, start + leaf - 1);
+            if (compare(array[a + root - 1], array[a + leaf - 1]) < 0) {
+                swap(array, a + root - 1, a + leaf - 1);
                 root = leaf;
             } else break;
         }
     }
 
-    void heapify(T* array, int low, int high) {
-        int length = high - low;
+    void heapify(T* array, int a, int b) {
+        int length = b - a;
         
         for (int i = length / 2; i >= 1; i--)
-            siftDown(array, i, length, low);
+            siftDown(array, i, length, a);
     }
 
-    void maxHeapSort(T* array, int start, int length) {
-        heapify(array, start, length);
+    void maxHeapSort(T* array, int a, int length) {
+        heapify(array, a, length);
 
-        for (int i = length - start; i > 1; i--) {
-            swap(array, start, start + i - 1);
-            siftDown(array, 1, i - 1, start);
+        for (int i = length - a; i > 1; i--) {
+            swap(array, a, a + i - 1);
+            siftDown(array, 1, i - 1, a);
         }
     }
 
@@ -119,11 +119,11 @@ struct thsSort {
 
     void shellSort(T* array, int lo, int hi) {
         for (int k = 0; k < incsLen; k++) {
-            for (int h = incs[k], i = h + lo; i < hi; i++) {
+            for (int b = incs[k], i = b + lo; i < hi; i++) {
                 T v = array[i];
                 
                 int j = i;
-                for (; j >= h && compare(array[j - h], v) > 0; j -= h)
+                for (; j >= b && compare(array[j - b], v) > 0; j -= b)
                     array[j] = array[j - k];
                 array[j] = v;
             }
@@ -173,11 +173,11 @@ struct thsSort {
         swap(array, a, a + (8 * gap));
     }
 
-    bool getSortedRuns(T* array, int start, int end) {
+    bool getSortedRuns(T* array, int a, int b) {
         bool reverseSorted = true,
                     sorted = true;
 
-        for (int i = start; i < end - 1; i++) {
+        for (int i = a; i < b - 1; i++) {
             if (compare(array[i], array[i + 1]) > 0)
                 sorted = false;
             else reverseSorted = false;
@@ -186,48 +186,59 @@ struct thsSort {
         }
 
         if (reverseSorted && !sorted) {
-            reverse(array, start, end);
+            reverse(array, a, b);
             return true;
         }
 
         return sorted;
     }
 
-    void medianOfSixteenAQSort(T* arr, int low, int high, int depthLimit) {
-        while (high - low > 16) {
-            if (getSortedRuns(arr, low, high)) return;
-            if (depthLimit == 0) {
-                maxHeapSort(arr, low, high);
+    void medianOfSixteenAQSort(T* array, int a, int b, int depth, bool unbalanced) {
+        while (b - a > 16) {
+            if (getSortedRuns(array, a, b)) return;
+            if (depth == 0) {
+                maxHeapSort(array, a, b);
                 return;
             }
+            
+            int p;
+            if (!unbalanced) {
+                medianOfThree(array, a, b);
+                p = partition(array, a, b, a);
+            } else p = a;
+            
 
-            medianOfThree(arr, low, high);
-            int pi = partition(arr, low, high, low);
+            int left  = p - a,
+                right = b - (p + 1);
 
-            int left  = pi   - low,
-                right = high - (pi + 1);
-
-            if ((left == 0 || right == 0) || (left / right >= 16 || right / left >= 16)) {
-                if (high - low > 80) {
-                    medianOfSixteen(arr, low, high);
-                    pi = partition(arr, low + 1, high, low);
+            if ((left == 0 || right == 0) || (left / right >= 16 || right / left >= 16) || unbalanced) {
+                if (b - a > 80) {
+                    swap(array, a, p);
+                    if (left < right) {
+                        medianOfSixteenAQSort(array, a, p, depth - 1, true);
+                        a = p;
+                    } else {
+                        medianOfSixteenAQSort(array, p + 1, b, depth - 1, true);
+                        b = p;
+                    }
+                    medianOfSixteen(array, a, b);
+                    p = partition(array, a + 1, b, a);
                 } else {
-                    shellSort(arr, low, high);
+                    shellSort(array, a, b);
                     return;
                 }
             }
 
-            swap(arr, low, pi);
+            swap(array, a, p);
 
-            depthLimit--;
-            medianOfSixteenAQSort(arr, pi + 1, high, depthLimit);
-            high = pi;
+            medianOfSixteenAQSort(array, p + 1, b, --depth, false);
+            b = p;
         }
-        uncheckedInsertionSort(arr, low, high);
+        uncheckedInsertionSort(array, a, b);
     }
 
-    void sort(T* arr, int start, int end) {
-        medianOfSixteenAQSort(arr, start, end, (int)(2 * log2(end - start)));
+    void sort(T* array, int a, int b) {
+        medianOfSixteenAQSort(array, a, b, (int)(2 * log2(b - a)), false);
     }
 
     void multiSwap(T* array, int a, int b, int len) {
@@ -286,21 +297,21 @@ struct thsSort {
         else if (m - a == 1) insertToBW(array, a, b - 1);
     }
 
-    int triSearch(T* arr, int l, int h, T val) {
-        int m = l + ((h - l) / 2);
+    int triSearch(T* array, int a, int b, T val) {
+        int m = a + ((b - a) / 2);
 
-        if      (compare(val, arr[l]) < 0) return l;
-        else if (compare(val, arr[h]) < 0) {
-            if  (compare(val, arr[m]) < 0)
-                 return triSearch(arr, l + 1, m - 1, val);
-            else return triSearch(arr, m + 1, h - 1, val);
-        } else return h + 1;
+        if      (compare(val, array[a]) < 0) return a;
+        else if (compare(val, array[b]) < 0) {
+            if  (compare(val, array[m]) < 0)
+                 return triSearch(array, a + 1, m - 1, val);
+            else return triSearch(array, m + 1, b - 1, val);
+        } else return b + 1;
     }
 
-    void triInsertSort(T* array, int start, int end) {
-        for (int i = start + 1; i < end; i++) {
+    void triInsertSort(T* array, int a, int b) {
+        for (int i = a + 1; i < b; i++) {
             T tmp  = array[i];
-            int lo = triSearch(array, start, i - 1, tmp);
+            int lo = triSearch(array, a, i - 1, tmp);
 
             for (int j = i - 1; j >= lo; j--)
                 array[j + 1] = array[j];
@@ -308,7 +319,7 @@ struct thsSort {
         }
     }
 
-    void mergeUp(T* array, int leftStart, int rightStart, int end) {
+    void mergeUp(T* array, int leftStart, int rightStart, int b) {
         T* copied = new T[rightStart - leftStart];
 
         for (int i = 0; i < rightStart - leftStart; i++)
@@ -317,12 +328,12 @@ struct thsSort {
         int left  = leftStart,
             right = rightStart;
 
-        for (int nxt = 0; nxt < end - leftStart; nxt++) {
-            if (left >= rightStart && right >= end) break;
+        for (int nxt = 0; nxt < b - leftStart; nxt++) {
+            if (left >= rightStart && right >= b) break;
 
-            if (left < rightStart && right >= end)
+            if (left < rightStart && right >= b)
                 array[nxt + leftStart] = copied[(left++) - leftStart];
-            else if (left >= rightStart && right < end) break;
+            else if (left >= rightStart && right < b) break;
             else if (compare(copied[left - leftStart], array[right]) <= 0)
                 array[nxt + leftStart] = copied[(left++) - leftStart];
             else
@@ -332,16 +343,16 @@ struct thsSort {
         delete[] copied;
     }
 
-    void mergeDown(T* array, int leftStart, int rightStart, int end) {
-        T* copied = new T[end - rightStart];
+    void mergeDown(T* array, int leftStart, int rightStart, int b) {
+        T* copied = new T[b - rightStart];
 
-        for (int i = 0; i < end - rightStart; i++)
+        for (int i = 0; i < b - rightStart; i++)
             copied[i] = array[i + rightStart];
 
         int left  = rightStart - 1,
-            right = end;
+            right = b;
 
-        for (int nxt = end - leftStart - 1; nxt >= 0; nxt--) {
+        for (int nxt = b - leftStart - 1; nxt >= 0; nxt--) {
             if (left <= leftStart && right <= rightStart) break;
 
             if (left < leftStart && right >= leftStart)
@@ -409,26 +420,26 @@ struct thsSort {
         }
     }
 
-    bool getReversedRuns(T* array, int start, int end, int limit) {
-        int i = start;
-        for (; i < end - 1; i++)
+    bool getReversedRuns(T* array, int a, int b, int limit) {
+        int i = a;
+        for (; i < b - 1; i++)
             if (compare(array[i], array[i + 1]) <= 0) break;
 
-        if (i - start > limit) reverse(array, start, i);
+        if (i - a > limit) reverse(array, a, i);
 
-        return (i == end);
+        return (i == b);
     }
 
-    void stableSort(T* array, int start, int end) {
-        if (getReversedRuns(array, start, end, 8)) return;
-        if (end - start > 32) {
-            int m = start + ((end - start) / 2);
+    void stableSort(T* array, int a, int b) {
+        if (getReversedRuns(array, a, b, 8)) return;
+        if (b - a > 32) {
+            int m = a + ((b - a) / 2);
             
-            stableSort(array, start, m);
-            stableSort(array,     m, end);
+            stableSort(array, a, m);
+            stableSort(array,     m, b);
 
-            merge(array, start, m, end);
-        } else triInsertSort(array, start, end);
+            merge(array, a, m, b);
+        } else triInsertSort(array, a, b);
     }
 
     MinMaxPair<T> findMinMax(T* array, int a, int b) {
