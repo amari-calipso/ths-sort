@@ -124,7 +124,7 @@ struct thsSort {
                 
                 int j = i;
                 for (; j >= b && compare(array[j - b], v) > 0; j -= b)
-                    array[j] = array[j - k];
+                    array[j] = array[j - b];
                 array[j] = v;
             }
         }
@@ -231,7 +231,7 @@ struct thsSort {
 
             swap(array, a, p);
 
-            medianOfSixteenAQSort(array, p + 1, b, --depth, false);
+            medianOfSixteenAQSort(array, p, b, --depth, false);
             b = p;
         }
         uncheckedInsertionSort(array, a, b);
