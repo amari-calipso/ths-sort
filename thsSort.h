@@ -73,31 +73,31 @@ struct thsSort {
             swap(array, a, b);
     }
 
-    void siftDown(T* array, int root, int dist, int a) {
-        while (root <= dist / 2) {
-            int leaf = 2 * root;
+    void siftDown(T* array, int r, int d, int a) {
+        while (r <= d / 2) {
+            int l = 2 * r;
 
-            if (leaf < dist && compare(array[a + leaf - 1], array[a + leaf]) < 0)
-                leaf++;
+            if (l < d && compare(array[a + l - 1], array[a + l]) < 0) 
+                l++;
 
-            if (compare(array[a + root - 1], array[a + leaf - 1]) < 0) {
-                swap(array, a + root - 1, a + leaf - 1);
-                root = leaf;
+            if (compare(array[a + r - 1], array[a + l - 1]) < 0) {
+                swap(array, a + r - 1, a + l - 1);
+                r = l;
             } else break;
         }
     }
 
     void heapify(T* array, int a, int b) {
-        int length = b - a;
-        
-        for (int i = length / 2; i >= 1; i--)
-            siftDown(array, i, length, a);
+        int l = b - a;
+
+        for (int i = l / 2; i >= 1; i--)
+            siftDown(array, i, l, a);
     }
 
-    void maxHeapSort(T* array, int a, int length) {
-        heapify(array, a, length);
+    void maxHeapSort(T* array, int a, int b) {
+        heapify(array, a, b);
 
-        for (int i = length - a; i > 1; i--) {
+        for (int i = b - a; i > 1; i--) {
             swap(array, a, a + i - 1);
             siftDown(array, 1, i - 1, a);
         }
@@ -117,14 +117,14 @@ struct thsSort {
         }
     }
 
-    void shellSort(T* array, int lo, int hi) {
-        for (int k = 0; k < incsLen; k++) {
-            for (int b = incs[k], i = b + lo; i < hi; i++) {
+    void shellSort(T* array, int a, int b) {
+        for (int h : incs) {
+            for (int i = b + h; i < b; i++) {
                 T v = array[i];
-                
+
                 int j = i;
-                for (; j >= b && compare(array[j - b], v) > 0; j -= b)
-                    array[j] = array[j - b];
+                for (; j >= h && compare(array[j - h], v) > 0; j -= h) 
+                    array[j] = array[j - h];
                 array[j] = v;
             }
         }
@@ -135,28 +135,28 @@ struct thsSort {
             j = b;
 
         while (true) {
-            i++;
-            while (i <  b && compare(array[i], array[p]) < 0) i++;
-
-            j--;
-            while (j >= a && compare(array[j], array[p]) > 0) j--;
+            for (++i; i  < b && compare(array[i], array[p]) < 0; i++);
+            for (--j; j >= a && compare(array[j], array[p]) > 0; j--);
 
             if (i < j) swap(array, i, j);
             else       return j;
         }
     }
 
-    void compNSwap(T* array, int a, int b, int gap, int start) {
-        if (compare(array[start + (a * gap)], array[start + (b * gap)]) > 0)
-            swap(array, start + (a * gap), start + (b * gap));
+    void compSwap(T* array, int a, int b, int g, int s) {
+        int x = s + (a * g),
+            y = s + (b * g);
+
+        if (compare(array[x], array[y]) > 0)
+            swap(array, x, y);
     }
 
     void medianOfThree(T* array, int a, int b) {
-        int m = a + (b - 1 - a) / 2;
+        int m = a + (--b - a) / 2;
 
-        compNSwap(array, a, m, 1, 0);
-        if (compare(array[m], array[b - 1]) > 0) {
-            swap(array, m, b - 1);
+        compSwap(array, a, m, 1, 0);
+        if (compare(array[m], array[b]) > 0) {
+            swap(array, m, b);
 
             if (compare(array[a], array[m]) > 0) return;
         }
@@ -165,60 +165,61 @@ struct thsSort {
     }
 
     void medianOfSixteen(T* array, int a, int b) {
-        int gap = (b - 1 - a) / 16;
+        int g = (b - 1 - a) / 16;
 
         for (int i = 0; i < medianOfSixteenSwapsLen; i += 2)
-            compNSwap(array, medianOfSixteenSwaps[i], medianOfSixteenSwaps[i + 1], gap, a);
+            compSwap(array, medianOfSixteenSwaps[i], medianOfSixteenSwaps[i + 1], g, a);
 
-        swap(array, a, a + (8 * gap));
+        swap(array, a, a + (8 * g));
     }
 
     bool getSortedRuns(T* array, int a, int b) {
-        bool reverseSorted = true,
-                    sorted = true;
+        bool rs = true,
+              s = true;
 
         for (int i = a; i < b - 1; i++) {
             if (compare(array[i], array[i + 1]) > 0)
-                sorted = false;
-            else reverseSorted = false;
+                s = false;
+            else rs = false;
 
-            if ((!reverseSorted) && (!sorted)) return false;
+            if ((!rs) && (!s)) return false;
         }
 
-        if (reverseSorted && !sorted) {
+        if (rs && !s) {
             reverse(array, a, b);
             return true;
         }
 
-        return sorted;
+        return s;
     }
 
-    void medianOfSixteenAQSort(T* array, int a, int b, int depth, bool unbalanced) {
+    void medianOfSixteenAQSort(T* array, int a, int b, int d, bool unbalanced) {
         while (b - a > 16) {
             if (getSortedRuns(array, a, b)) return;
-            if (depth == 0) {
+
+            if (d == 0) {
                 maxHeapSort(array, a, b);
                 return;
             }
-            
+
             int p;
             if (!unbalanced) {
                 medianOfThree(array, a, b);
                 p = partition(array, a, b, a);
             } else p = a;
-            
 
-            int left  = p - a,
-                right = b - (p + 1);
+            int l = p - a,
+                r = b - (p + 1);
 
-            if ((left == 0 || right == 0) || (left / right >= 16 || right / left >= 16) || unbalanced) {
+            if ((l == 0 || r == 0) || (l / r >= 16 || r / l >= 16) || unbalanced) {
                 if (b - a > 80) {
                     swap(array, a, p);
-                    if (left < right) {
-                        medianOfSixteenAQSort(array, a, p, depth - 1, true);
+
+                    if (l < r) {
+                        medianOfSixteenAQSort(array, a, p, d - 1, true);
                         a = p;
                     } else {
-                        medianOfSixteenAQSort(array, p + 1, b, depth - 1, true);
+                        medianOfSixteenAQSort(array, p + 1, b, d - 1, true);
                         b = p;
                     }
                     medianOfSixteen(array, a, b);
@@ -231,7 +232,7 @@ struct thsSort {
 
             swap(array, a, p);
 
-            medianOfSixteenAQSort(array, p, b, --depth, false);
+            medianOfSixteenAQSort(array, p, b, --d, false);
             b = p;
         }
         uncheckedInsertionSort(array, a, b);
@@ -241,14 +242,14 @@ struct thsSort {
         medianOfSixteenAQSort(array, a, b, (int)(2 * log2(b - a)), false);
     }
 
-    void multiSwap(T* array, int a, int b, int len) {
-        for (int i = 0; i < len; i++)
+    void multiSwap(T* array, int a, int b, int l) {
+        for (int i = 0; i < l; i++)
             swap(array, a + i, b + i);
     }
 
-    void multiSwapBW(T* array, int a, int b, int len) {
-        for (int i = 0; i < len; i++)
-            swap(array, a + len - i - 1, b + len - i - 1);
+    void multiSwapBW(T* array, int a, int b, int l) {
+        for (--l; l >= 0; l--)
+            swap(array, a + l, b + l);
     }
 
     void insertTo(T* array, int from, int to) {
@@ -267,20 +268,21 @@ struct thsSort {
         array[to] = tmp;
     }
 
-    int binarySearch(T* array, int a, int b, T value, bool left) {
-        bool comp;
+    int binarySearch(T* array, int a, int b, T val, bool l) {
+        bool cmp;
+
         while (a < b) {
             int m = (a + b) / 2;
 
-            if (left) comp = compare(value, array[m]) <= 0;
-            else      comp = compare(value, array[m]) <  0;
+            if (l) cmp = compare(val, array[m]) <= 0;
+            else   cmp = compare(val, array[m]) <  0;
 
-            if (comp) b = m;
-            else      a = m + 1;
+            if (cmp) b = m;
+            else     a = m + 1;
         }
 
         return a;
-    }
+    } 
 
     void rotate(T* array, int a, int m, int b) {
         while (b - m > 1 && m - a > 1) {
@@ -297,74 +299,56 @@ struct thsSort {
         else if (m - a == 1) insertToBW(array, a, b - 1);
     }
 
-    int triSearch(T* array, int a, int b, T val) {
-        int m = a + ((b - a) / 2);
-
-        if      (compare(val, array[a]) < 0) return a;
-        else if (compare(val, array[b]) < 0) {
-            if  (compare(val, array[m]) < 0)
-                 return triSearch(array, a + 1, m - 1, val);
-            else return triSearch(array, m + 1, b - 1, val);
-        } else return b + 1;
+    void insertSort(T* array, int a, int b) {
+        for (int i = a + 1; i < b; i++)
+            if (array[i] < array[i - 1])
+                insertTo(array, i, binarySearch(array, a, i - 1, array[i], false));
     }
+    
+    void mergeUp(T* array, int a, int m, int b) {
+        T* aux = new T[m - a];
 
-    void triInsertSort(T* array, int a, int b) {
-        for (int i = a + 1; i < b; i++) {
-            T tmp  = array[i];
-            int lo = triSearch(array, a, i - 1, tmp);
+        for (int i = 0; i < m - a; i++)
+            aux[i] = array[i + a];
 
-            for (int j = i - 1; j >= lo; j--)
-                array[j + 1] = array[j];
-            array[lo] = tmp;
-        }
-    }
+        int l = a,
+            r = m;
 
-    void mergeUp(T* array, int leftStart, int rightStart, int b) {
-        T* copied = new T[rightStart - leftStart];
+        for (int nxt = 0; nxt < b - a; nxt++) {
+            if (l >= m && r >= b) break;
 
-        for (int i = 0; i < rightStart - leftStart; i++)
-            copied[i] = array[i + leftStart];
-
-        int left  = leftStart,
-            right = rightStart;
-
-        for (int nxt = 0; nxt < b - leftStart; nxt++) {
-            if (left >= rightStart && right >= b) break;
-
-            if (left < rightStart && right >= b)
-                array[nxt + leftStart] = copied[(left++) - leftStart];
-            else if (left >= rightStart && right < b) break;
-            else if (compare(copied[left - leftStart], array[right]) <= 0)
-                array[nxt + leftStart] = copied[(left++) - leftStart];
-            else
-                array[nxt + leftStart] = array[right++];
+            if (l < m && r >= b)
+                array[a + nxt] = aux[(l++) - a];
+            else if (l >= m && r < b) break;
+            else if (compare(aux[l - a], array[r]) <= 0)
+                 array[a + nxt] =   aux[(l++) - a];
+            else array[a + nxt] = array[r++];
         }
 
-        delete[] copied;
+        delete[] aux;
     }
 
-    void mergeDown(T* array, int leftStart, int rightStart, int b) {
-        T* copied = new T[b - rightStart];
+    void mergeDown(T* array, int a, int m, int b) {
+        T* aux = new T[b - m];
 
-        for (int i = 0; i < b - rightStart; i++)
-            copied[i] = array[i + rightStart];
+        for (int i = 0; i < b - m; i++)
+            aux[i] = array[i + m];
 
-        int left  = rightStart - 1,
-            right = b;
+        int l = m - 1,
+            r = b;
 
-        for (int nxt = b - leftStart - 1; nxt >= 0; nxt--) {
-            if (left <= leftStart && right <= rightStart) break;
+        for (int nxt = b - a - 1; nxt >= 0; nxt--) {
+            if (l <= a && r <= m) break;
 
-            if (left < leftStart && right >= leftStart)
-                array[leftStart + nxt] = copied[(right--) - rightStart - 1];
-            else if ((left >= leftStart && right < leftStart) || right < rightStart + 1) break;
-            else if (compare(array[left], copied[right - rightStart - 1]) <= 0)
-                array[leftStart + nxt] = copied[(right--) - rightStart - 1];
-            else
-                array[leftStart + nxt] = array[left--];
+            if (l < a && r >= a)
+                array[a + nxt] = aux[(r--) - m - 1];
+            else if ((l >= a && r < a) || r < m + 1) break;
+            else if (compare(array[l], aux[r - m - 1]) <= 0)
+                 array[a + nxt] =   aux[(r--) - m - 1];
+            else array[a + nxt] = array[l--];
         }
 
-        delete[] copied;
+        delete[] aux;
     }
 
     bool checkBounds(T* array, int a, int m, int b) {
@@ -379,7 +363,9 @@ struct thsSort {
 
     void mergeInPlace(T* array, int a, int m, int b) {
         if (m - a <= b - m) {
-            int i = a, j = m, k;
+            int i = a, 
+                j = m, k;
+
             while (i < j && j < b) {
                 if (compare(array[i], array[j]) > 0) {
                     k = binarySearch(array, j, b, array[i], true);
@@ -389,7 +375,9 @@ struct thsSort {
                 } else i++;
             }
         } else {
-            int i = m - 1, j = b - 1, k;
+            int i = m - 1, 
+                j = b - 1, k;
+
             while (j > i && i >= a) {
                 if (compare(array[i], array[j]) > 0) {
                     k = binarySearch(array, a, i, array[j], false);
@@ -436,10 +424,10 @@ struct thsSort {
             int m = a + ((b - a) / 2);
             
             stableSort(array, a, m);
-            stableSort(array,     m, b);
+            stableSort(array, m, b);
 
             merge(array, a, m, b);
-        } else triInsertSort(array, a, b);
+        } else insertSort(array, a, b);
     }
 
     MinMaxPair<T> findMinMax(T* array, int a, int b) {
@@ -455,25 +443,56 @@ struct thsSort {
         return minMax;
     }
 
-    void featureSort(T* array, int a, int b) {
+    void staticSort(T* array, int a, int b) {
         MinMaxPair<T> minMax = findMinMax(array, a, b);
+        int len = b - a + 1;
 
-        float constant;
-        if (minMax.min < 0) constant = (b - a) / (minMax.max - minMax.min + 4);
-        else                constant = (b - a) / (minMax.max + 4);
-        
-        std::vector<T>* aux = new std::vector<T>[b - a + 1];
+        int* cnt = new int[len];
+        int* pts = new int[len--];
+
+        float mlt = len / (minMax.max - minMax.min + 4);
 
         for (int i = a; i < b; i++)
-            aux[(int)((float)(array[i] - minMax.min) * constant)].push_back(array[i]);
+            cnt[(int)((float)(array[i] - minMax.min) * mlt)]++;
 
-        for (int i = 0; i < b - a; i++)
-            stableSort(aux[i].data(), 0, aux[i].size());
+        pts[0] = a;
+        for (int i = 1; i < len; i++)
+            pts[i] = cnt[i - 1] + pts[i - 1];
 
-        for (int i = 0, r = a; i < b - a; i++)
-            for (int j = 0; j < aux[i].size(); j++, r++)
-                array[r] = aux[i][j];
+        for (int v = 0; v < len; v++) {
+            while (cnt[v] > 0) {
+                int orig = pts[v],
+                    from = orig;
 
-        delete[] aux;
+                T val = array[from];
+                array[from] = -1;
+
+                do {
+                    int d  = (int)((float)(val - minMax.min) * mlt),
+                        to = pts[d];
+
+                    pts[d]++;
+                    cnt[d]--;
+
+                    T tmp     = array[to];
+                    array[to] = val;
+                    val       = tmp;
+                    from      = to;
+                } while (from != orig);
+            }
+        }
+
+        for (int i = 0; i < len; i++) {
+            int s = i > 0 ? pts[i - 1] : a,
+                e = pts[i];
+
+            if (e - s > 1) {
+                if (e - s > 16) maxHeapSort(array, s, e);
+                else            uncheckedInsertionSort(array, s, e);
+            }
+        }
+
+        delete[] cnt;
+        delete[] pts;
     }
 };
