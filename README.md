@@ -1,4 +1,4 @@
-# ths-sort-cpp
+# ths-sort
 thsSort - a simple sorting library i made for school projects
 
 this library contains three main algorithms:
