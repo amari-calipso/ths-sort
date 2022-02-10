@@ -42,7 +42,7 @@ constexpr int medianOfSixteenSwaps[] = {
     6, 11,  7, 10, 4, 13, 14, 15,  8, 12,  2,  3,  5,  9,
     2,  5,  8, 14, 3,  9, 12, 15,  6,  7, 10, 11,
     3,  5, 12, 14, 4,  9,  8, 13,
-    7,  9, 11, 13, 4,  6,  8, 10, 
+    7,  9, 11, 13, 4,  6,  8, 10,
     4,  5,  6,  7, 8,  9, 10, 11, 12, 13,
     7,  8,  9, 10
 };
@@ -77,7 +77,7 @@ struct thsSort {
         while (r <= d / 2) {
             int l = 2 * r;
 
-            if (l < d && compare(array[a + l - 1], array[a + l]) < 0) 
+            if (l < d && compare(array[a + l - 1], array[a + l]) < 0)
                 l++;
 
             if (compare(array[a + r - 1], array[a + l - 1]) < 0) {
@@ -87,15 +87,11 @@ struct thsSort {
         }
     }
 
-    void heapify(T* array, int a, int b) {
+    void maxHeapSort(T* array, int a, int b) {
         int l = b - a;
 
         for (int i = l / 2; i >= 1; i--)
             siftDown(array, i, l, a);
-    }
-
-    void maxHeapSort(T* array, int a, int b) {
-        heapify(array, a, b);
 
         for (int i = b - a; i > 1; i--) {
             swap(array, a, a + i - 1);
@@ -123,7 +119,7 @@ struct thsSort {
                 T v = array[i];
 
                 int j = i;
-                for (; j >= h && compare(array[j - h], v) > 0; j -= h) 
+                for (; j >= h && compare(array[j - h], v) > 0; j -= h)
                     array[j] = array[j - h];
                 array[j] = v;
             }
@@ -282,7 +278,7 @@ struct thsSort {
         }
 
         return a;
-    } 
+    }
 
     void rotate(T* array, int a, int m, int b) {
         while (b - m > 1 && m - a > 1) {
@@ -304,7 +300,7 @@ struct thsSort {
             if (array[i] < array[i - 1])
                 insertTo(array, i, binarySearch(array, a, i - 1, array[i], false));
     }
-    
+
     void mergeUp(T* array, int a, int m, int b) {
         T* aux = new T[m - a];
 
@@ -363,7 +359,7 @@ struct thsSort {
 
     void mergeInPlace(T* array, int a, int m, int b) {
         if (m - a <= b - m) {
-            int i = a, 
+            int i = a,
                 j = m, k;
 
             while (i < j && j < b) {
@@ -375,7 +371,7 @@ struct thsSort {
                 } else i++;
             }
         } else {
-            int i = m - 1, 
+            int i = m - 1,
                 j = b - 1, k;
 
             while (j > i && i >= a) {
@@ -422,7 +418,7 @@ struct thsSort {
         if (getReversedRuns(array, a, b, 8)) return;
         if (b - a > 32) {
             int m = a + ((b - a) / 2);
-            
+
             stableSort(array, a, m);
             stableSort(array, m, b);
 
