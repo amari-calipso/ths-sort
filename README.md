@@ -1,5 +1,5 @@
 # ths-sort-cpp
-thsSort - a simple c++ sorting library i made for school projects
+thsSort - a simple sorting library i made for school projects
 
 this library contains three main algorithms:
   - Median Of Sixteen Adaptive Quicksort (as "`sort`")
