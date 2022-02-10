@@ -1,47 +1,34 @@
-package java_src;
+package THSSort;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class THSSort<T extends Comparable<T>> {
-    protected static final int[] incs = {48, 21, 7, 3, 1};
-    protected static final int[] swaps = {
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        1, 3, 5, 7, 9, 11, 13, 15, 2, 4, 6, 8, 10, 12, 14, 16,
-        1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16,
-        1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15, 8, 16,
-        6, 11, 7, 10, 4, 13, 14, 15, 8, 12, 2, 3, 5, 9,
-        2, 5, 8, 14, 3, 9, 12, 15, 6, 7, 10, 11,
-        3, 5, 12, 14, 4, 9, 8, 13,
-        7, 9, 11, 13, 4, 6, 8, 10,
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-        7, 8, 9, 10
-    };
-
-    public static <T> void swap(T[] array, int a, int b) {
-        T tmp    = array[a];
-        array[a] = array[b];
-        array[b] = tmp;
+public class THSSortLists<T extends Comparable<T>> extends THSSort<T> {
+    public static <T> void swap(List<T> array, int a, int b) {
+        T tmp = array.get(a);
+        array.set(a, array.get(b));
+        array.set(b, tmp);
     }
 
-    public static <T> void reverse(T[] array, int a, int b) {
+    public static <T> void reverse(List<T> array, int a, int b) {
         for (--b; a < b; a++, b--)
             swap(array, a, b);
     }
 
-    private static <T extends Comparable<T>> void siftDown(T[] array, int r, int d, int a) {
+    private static <T extends Comparable<T>> void siftDown(List<T> array, int r, int d, int a) {
         while (r <= d / 2) {
             int l = 2 * r;
 
-            if (l < d && array[a + l - 1].compareTo(array[a + l]) < 0) l++;
+            if (l < d && array.get(a + l - 1).compareTo(array.get(a + l)) < 0) l++;
 
-            if (array[a + r - 1].compareTo(array[a + l - 1]) < 0) {
+            if (array.get(a + r - 1).compareTo(array.get(a + l - 1)) < 0) {
                 swap(array, a + r - 1, a + l - 1);
                 r = l;
             } else break;
         }
     }
 
-    public static <T extends Comparable<T>> void maxHeapSort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void maxHeapSort(List<T> array, int a, int b) {
         int l = b - a;
 
         for (int i = l / 2; i > 0; i--)
@@ -53,68 +40,68 @@ public class THSSort<T extends Comparable<T>> {
         }
     }
 
-    public static <T extends Comparable<T>> void uncheckedInsertionSort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void uncheckedInsertionSort(List<T> array, int a, int b) {
         for (int i = a + 1; i < b; i++) {
-            if (array[i].compareTo(array[a]) < 0) swap(array, i, a);
+            if (array.get(i).compareTo(array.get(a)) < 0) swap(array, i, a);
 
-            T key = array[i];
+            T key = array.get(i);
 
             int j = i - 1;
-            for (; key.compareTo(array[j]) < 0; j--)
-                array[j + 1] = array[j];
-            array[j + 1] = key;
+            for (; key.compareTo(array.get(j)) < 0; j--)
+                array.set(j + 1, array.get(j));
+            array.set(j + 1, key);
         }
     }
 
-    public static <T extends Comparable<T>> void shellSort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void shellSort(List<T> array, int a, int b) {
         for (int k : incs) {
             for (int i = k + a; i < b; i++) {
-                T v = array[i];
+                T v = array.get(i);
 
                 int j = i;
-                for (; j >= k + a && array[j - k].compareTo(v) > 0; j -= k)
-                    array[j] = array[j - k];
-                array[j] = v;
+                for (; j >= k + a && array.get(j - k).compareTo(v) > 0; j -= k)
+                    array.set(j, array.get(j - k));
+                array.set(j, v);
             }
         }
     }
 
-    public static <T extends Comparable<T>> int partition(T[] array, int a, int b, int p) {
+    public static <T extends Comparable<T>> int partition(List<T> array, int a, int b, int p) {
         int i = a - 1,
             j = b;
 
         while (true) {
-            for (++i; i <  b && array[i].compareTo(array[p]) < 0; i++);
-            for (--j; j >= a && array[j].compareTo(array[p]) > 0; j--);
+            for (++i; i <  b && array.get(i).compareTo(array.get(p)) < 0; i++);
+            for (--j; j >= a && array.get(j).compareTo(array.get(p)) > 0; j--);
 
             if (i < j) swap(array, i, j);
             else       return j;
         }
     }
 
-    private static <T extends Comparable<T>> void compSwap(T[] array, int a, int b, int g, int s) {
+    private static <T extends Comparable<T>> void compSwap(List<T> array, int a, int b, int g, int s) {
         int x = s + (a * g),
             y = s + (b * g);
 
-        if (array[x].compareTo(array[y]) > 0)
+        if (array.get(x).compareTo(array.get(y)) > 0)
             swap(array, x, y);
     }
 
-    public static <T extends Comparable<T>> void medianOfThree(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void medianOfThree(List<T> array, int a, int b) {
         int m = a + (--b - a) / 2;
 
         compSwap(array, a, m, 1, 0);
 
-        if (array[m].compareTo(array[b]) > 0) {
+        if (array.get(m).compareTo(array.get(b)) > 0) {
             swap(array, m, b);
 
-            if (array[a].compareTo(array[m]) > 0) return;
+            if (array.get(a).compareTo(array.get(m)) > 0) return;
         }
 
         swap(array, a, m);
     }
 
-    public static <T extends Comparable<T>> void medianOfSixteen(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void medianOfSixteen(List<T> array, int a, int b) {
         int g = (b - 1 - a) / 16,
             m = a + (8 * g);
 
@@ -124,13 +111,13 @@ public class THSSort<T extends Comparable<T>> {
         swap(array, a, m);
     }
 
-    private static <T extends Comparable<T>> boolean getSortedRuns(T[] array, int a, int b) {
+    private static <T extends Comparable<T>> boolean getSortedRuns(List<T> array, int a, int b) {
         boolean rs = true,
                  s = true;
 
         for (int i = a; i < b - 1; i++) {
-            if (array[i].compareTo(array[i + 1]) > 0) s  = false;
-            else                                      rs = false;
+            if (array.get(i).compareTo(array.get(i + 1)) > 0) s  = false;
+            else                                              rs = false;
 
             if ((!rs) && (!s)) return false;
         }
@@ -143,7 +130,7 @@ public class THSSort<T extends Comparable<T>> {
         return s;
     }
 
-    private static <T extends Comparable<T>> void sort(T[] array, int a, int b, int d, boolean unbalanced) {
+    private static <T extends Comparable<T>> void sort(List<T> array, int a, int b, int d, boolean unbalanced) {
         while (b - a > 16) {
             if (getSortedRuns(array, a, b)) return;
 
@@ -189,49 +176,44 @@ public class THSSort<T extends Comparable<T>> {
         uncheckedInsertionSort(array, a, b);
     }
 
-    public static int log2(int n) {
-        if (n == 0) return 0;
-        return 31 - Integer.numberOfLeadingZeros(n);
-    }
-
-    public static <T extends Comparable<T>> void sort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void sort(List<T> array, int a, int b) {
         sort(array, a, b, log2(b - a), false);
     }
 
-    public static <T> void multiSwap(T[] array, int a, int b, int l) {
+    public static <T> void multiSwap(List<T> array, int a, int b, int l) {
         for (int i = 0; i < l; i++)
             swap(array, a + i, b + i);
     }
 
-    public static <T> void multiSwapBW(T[] array, int a, int b, int l) {
+    public static <T> void multiSwapBW(List<T> array, int a, int b, int l) {
         for (--l; l >= 0; l--)
             swap(array, a + l, b + l);
     }
 
-    public static <T> void insertTo(T[] array, int from, int to) {
-        T tmp = array[from];
+    public static <T> void insertTo(List<T> array, int from, int to) {
+        T tmp = array.get(from);
 
         for (int i = from - 1; i >= to; i--)
-            array[i + 1] = array[i];
-        array[to] = tmp;
+            array.set(i + 1, array.get(i));
+        array.set(to, tmp);
     }
 
-    public static <T> void insertToBW(T[] array, int from, int to) {
-        T tmp = array[from];
+    public static <T> void insertToBW(List<T> array, int from, int to) {
+        T tmp = array.get(from);
 
         for (int i = from; i < to; i++)
-            array[i] = array[i + 1];
-        array[to] = tmp;
+            array.set(i, array.get(i + 1));
+        array.set(to, tmp);
     }
 
-    public static <T extends Comparable<T>> int binarySearch(T[] array, int a, int b, T v, boolean l) {
+    public static <T extends Comparable<T>> int binarySearch(List<T> array, int a, int b, T v, boolean l) {
         boolean cmp;
 
         while (a < b) {
             int m = (a + b) / 2;
 
-            if (l) cmp = v.compareTo(array[m]) <= 0;
-            else   cmp = v.compareTo(array[m]) <  0;
+            if (l) cmp = v.compareTo(array.get(m)) <= 0;
+            else   cmp = v.compareTo(array.get(m)) <  0;
 
             if (cmp) b = m;
             else     a = m + 1;
@@ -240,7 +222,7 @@ public class THSSort<T extends Comparable<T>> {
         return a;
     }
 
-    public static <T> void rotate(T[] array, int a, int m, int b) {
+    public static <T> void rotate(List<T> array, int a, int m, int b) {
         while (b - m > 1 && m - a > 1) {
             if (b - m < m - a) {
                 multiSwap(array, a, m, b - m);
@@ -255,17 +237,17 @@ public class THSSort<T extends Comparable<T>> {
         else if (m - a == 1) insertToBW(array, a, b - 1);
     }
 
-    public static <T extends Comparable<T>> void insertSort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void insertSort(List<T> array, int a, int b) {
         for (int i = a + 1; i < b; i++)
-            if (array[i].compareTo(array[i - 1]) < 0)
-                insertTo(array, i, binarySearch(array, a, i - 1, array[i], false));
+            if (array.get(i).compareTo(array.get(i - 1)) < 0)
+                insertTo(array, i, binarySearch(array, a, i - 1, array.get(i), false));
     }
 
-    private static <T extends Comparable<T>> void mergeUp(T[] array, int a, int m, int b) {
+    private static <T extends Comparable<T>> void mergeUp(List<T> array, int a, int m, int b) {
         ArrayList<T> aux = new ArrayList<T>();
 
         for (int i = 0; i < m - a; i++)
-            aux.add(array[i + a]);
+            aux.add(array.get(i + a));
 
         int l = a,
             r = m;
@@ -274,19 +256,19 @@ public class THSSort<T extends Comparable<T>> {
             if (l >= m && r >= b) break;
 
             if (l < m && r >= b)
-                array[a + nxt] = aux.get((l++) - a);
+                array.set(a + nxt, aux.get((l++) - a));
             else if (l >= m && r < b) break;
-            else if (aux.get(l - a).compareTo(array[r]) <= 0)
-                array[a + nxt] = aux.get((l++) - a);
-            else array[a + nxt] = array[r++];
+            else if (aux.get(l - a).compareTo(array.get(r)) <= 0)
+                array.set(a + nxt, aux.get((l++) - a));
+            else array.set(a + nxt, array.get(r++));
         }
     }
 
-    private static <T extends Comparable<T>> void mergeDown(T[] array, int a, int m, int b) {
+    private static <T extends Comparable<T>> void mergeDown(List<T> array, int a, int m, int b) {
         ArrayList<T> aux = new ArrayList<T>();
 
         for (int i = 0; i < b - m; i++)
-            aux.add(array[i + m]);
+            aux.add(array.get(i + m));
 
         int l = m - 1,
             r = b;
@@ -295,31 +277,31 @@ public class THSSort<T extends Comparable<T>> {
             if (l <= a && r <= m) break;
 
             if (l < a && r >= a)
-                array[a + nxt] = aux.get((r--) - m - 1);
+                array.set(a + nxt, aux.get((r--) - m - 1));
             else if ((l >= a && r < a) || r < m + 1) break;
-            else if (array[l].compareTo(aux.get(r - m - 1)) <= 0)
-                array[a + nxt] = aux.get((r--) - m - 1);
-            else array[a + nxt] = array[l--];
+            else if (array.get(l).compareTo(aux.get(r - m - 1)) <= 0)
+                array.set(a + nxt, aux.get((r--) - m - 1));
+            else array.set(a + nxt, array.get(l--));
         }
     }
 
-    private static <T extends Comparable<T>> boolean checkBounds(T[] array, int a, int m, int b) {
-        if (array[m - 1].compareTo(array[m]) <= 0) return true;
-        else if (array[a].compareTo(array[b - 1]) > 0) {
+    private static <T extends Comparable<T>> boolean checkBounds(List<T> array, int a, int m, int b) {
+        if (array.get(m - 1).compareTo(array.get(m)) <= 0) return true;
+        else if (array.get(a).compareTo(array.get(b - 1)) > 0) {
             rotate(array, a, m, b);
             return true;
         }
         return false;
     }
 
-    public static <T extends Comparable<T>> void mergeInPlace(T[] array, int a, int m, int b) {
+    public static <T extends Comparable<T>> void mergeInPlace(List<T> array, int a, int m, int b) {
         if (m - a <= b - m) {
             int i = a,
                 j = m, k;
 
             while (i < j && j < b) {
-                if (array[i].compareTo(array[j]) > 0) {
-                    k = binarySearch(array, j, b, array[i], true);
+                if (array.get(i).compareTo(array.get(j)) > 0) {
+                    k = binarySearch(array, j, b, array.get(i), true);
                     rotate(array, i, j, k);
                     i += k - j;
                     j = k;
@@ -330,8 +312,8 @@ public class THSSort<T extends Comparable<T>> {
                 j = b - 1, k;
 
             while (j > i && i >= a) {
-                if (array[i].compareTo(array[j]) > 0) {
-                    k = binarySearch(array, a, i, array[j], false);
+                if (array.get(i).compareTo(array.get(j)) > 0) {
+                    k = binarySearch(array, a, i, array.get(j), false);
                     rotate(array, k, i + 1, j + 1);
                     j -= i + 1 - k;
                     i = k - 1;
@@ -340,11 +322,11 @@ public class THSSort<T extends Comparable<T>> {
         }
     }
 
-    public static <T extends Comparable<T>> void merge(T[] array, int a, int m, int b) {
+    public static <T extends Comparable<T>> void merge(List<T> array, int a, int m, int b) {
         if (checkBounds(array, a, m, b)) return;
 
-        b = binarySearch(array, m,     b, array[m - 1], true);
-        a = binarySearch(array, a, m - 1, array[m],     false);
+        b = binarySearch(array, m,     b, array.get(m - 1), true);
+        a = binarySearch(array, a, m - 1, array.get(m),     false);
 
         if (b - m < m - a) {
             if (b - m <= 8)
@@ -359,17 +341,17 @@ public class THSSort<T extends Comparable<T>> {
         }
     }
 
-    private static <T extends Comparable<T>> boolean getReversedRuns(T[] array, int a, int b, int l) {
+    private static <T extends Comparable<T>> boolean getReversedRuns(List<T> array, int a, int b, int l) {
         int i = a;
         for (; i < b - 1; i++)
-            if (array[i].compareTo(array[i + 1]) <= 0) break;
+            if (array.get(i).compareTo(array.get(i + 1)) <= 0) break;
 
         if (i - a > l) reverse(array, a, i);
 
         return i == b;
     }
 
-    public static <T extends Comparable<T>> void stableSort(T[] array, int a, int b) {
+    public static <T extends Comparable<T>> void stableSort(List<T> array, int a, int b) {
         if (getReversedRuns(array, a, b, 8)) return;
         if (b - a > 32) {
             int m = a + ((b - a) / 2);
@@ -381,20 +363,20 @@ public class THSSort<T extends Comparable<T>> {
         } else insertSort(array, a, b);
     }
 
-    public static <T extends Comparable<T>> MinMaxPair<T> findMinMax(T[] array, int a, int b) {
-        MinMaxPair<T> minMax = new MinMaxPair<T>(array[a], array[a]);
+    public static <T extends Comparable<T>> MinMaxPair<T> findMinMax(List<T> array, int a, int b) {
+        MinMaxPair<T> minMax = new MinMaxPair<T>(array.get(a), array.get(a));
 
         for (int i = a + 1; i < b; i++) {
-            if      (array[i].compareTo(minMax.min) < 0)
-                minMax.min = array[i];
-            else if (array[i].compareTo(minMax.max) > 0)
-                minMax.max = array[i];
+            if      (array.get(i).compareTo(minMax.min) < 0)
+                minMax.min = array.get(i);
+            else if (array.get(i).compareTo(minMax.max) > 0)
+                minMax.max = array.get(i);
         }
 
         return minMax;
     }
 
-    public static <T extends Number & Comparable<T>> void staticSort(T[] array, int a, int b) {
+    public static <T extends Number & Comparable<T>> void staticSort(List<T> array, int a, int b) {
         MinMaxPair<T> minMax = findMinMax(array, a, b);
         int len = b - a + 1;
 
@@ -406,7 +388,7 @@ public class THSSort<T extends Comparable<T>> {
         float mlt = len / (minMax.max.floatValue() - min + 1);
 
         for (int i = a; i < b; i++)
-            cnt[(int)((float)(array[i].floatValue() - min) * mlt)]++;
+            cnt[(int)((float)(array.get(i).floatValue() - min) * mlt)]++;
 
         pts[0] = a;
         for (int i = 1; i < len; i++)
@@ -417,8 +399,8 @@ public class THSSort<T extends Comparable<T>> {
                 int orig = pts[i],
                     from = orig;
 
-                T val = array[from];
-                array[from] = minMax.min;
+                T val = array.get(from);
+                array.set(from, minMax.min);
 
                 do {
                     int d  = (int)((float)(val.floatValue() - min) * mlt),
@@ -427,8 +409,8 @@ public class THSSort<T extends Comparable<T>> {
                     pts[d]++;
                     cnt[d]--;
 
-                    T tmp     = array[to];
-                    array[to] = val;
+                    T tmp     = array.get(to);
+                    array.set(to, val);
                     val       = tmp;
                     from      = to;
                 } while (from != orig);

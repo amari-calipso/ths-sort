@@ -1,4 +1,4 @@
-package java_src;
+package THSSort;
 
 public class MinMaxPair<T> {
     public T min, max;
