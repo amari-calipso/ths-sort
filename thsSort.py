@@ -1,5 +1,5 @@
 """
-Copyright (c) 2021-2022 thatsOven
+Copyright (c) 2021-2023 thatsOven
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
