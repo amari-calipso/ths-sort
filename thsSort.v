@@ -44,6 +44,7 @@ const (
 )
 
 [inline]
+[direct_array_access]
 fn swap[T](mut array []T, a int, b int) {
 	tmp     := array[a]
 	array[a] = array[b]
@@ -51,6 +52,7 @@ fn swap[T](mut array []T, a int, b int) {
 }
 
 [inline]
+[direct_array_access]
 fn reverse[T](mut array []T, s int, e int) {
 	mut a := s
 	mut b := e - 1
@@ -60,6 +62,7 @@ fn reverse[T](mut array []T, s int, e int) {
 	}
 }
 
+[direct_array_access]
 fn sift_down[T](mut array []T, root int, d int, a int) {
 	mut r := root
 
@@ -79,6 +82,7 @@ fn sift_down[T](mut array []T, root int, d int, a int) {
 	}
 }
 
+[direct_array_access]
 fn max_heap_sort[T](mut array []T, a int, b int) {
 	l := b - a
 
@@ -107,6 +111,7 @@ fn unchecked_insert_sort[T](mut array []T, a int, b int) {
 	}
 }
 
+[direct_array_access]
 fn shell_sort[T](mut array []T, a int, b int) {
 	for h in incs {
 		for i in a + h .. b {
@@ -121,6 +126,7 @@ fn shell_sort[T](mut array []T, a int, b int) {
 	}
 }
 
+[direct_array_access]
 fn partition[T](mut array []T, a int, b int, p int) int {
 	mut i := a - 1
 	mut j := b
@@ -142,6 +148,7 @@ fn partition[T](mut array []T, a int, b int, p int) int {
 }
 
 [inline]
+[direct_array_access]
 fn comp_swap[T](mut array []T, a int, b int, g int, s int) {
 	x := s + (a * g)
 	y := s + (b * g)
@@ -151,6 +158,7 @@ fn comp_swap[T](mut array []T, a int, b int, g int, s int) {
 	}
 }
 
+[direct_array_access]
 fn median_of_three[T](mut array []T, a int, e int) {
 	b := e - 1
 	m := a + (b - a) / 2
@@ -167,6 +175,7 @@ fn median_of_three[T](mut array []T, a int, e int) {
 	swap(mut array, a, m)
 }
 
+[direct_array_access]
 fn median_of_sixteen[T](mut array []T, a int, b int) {
 	g := (b - 1 - a) / 16
 
@@ -177,6 +186,7 @@ fn median_of_sixteen[T](mut array []T, a int, b int) {
 	swap(mut array, a, a + (8 * g))
 }
 
+[direct_array_access]
 fn get_sorted_runs[T](mut array []T, a int, b int) bool {
 	mut rs := true
 	mut s  := true 
@@ -201,6 +211,7 @@ fn get_sorted_runs[T](mut array []T, a int, b int) bool {
 	return s
 }
 
+[direct_array_access]
 fn median_of_sixteen_aqsort[T](mut array []T, s int, e int, depth int, unbalanced bool) {
 	mut a := s
 	mut b := e
@@ -255,11 +266,13 @@ fn median_of_sixteen_aqsort[T](mut array []T, s int, e int, depth int, unbalance
 	unchecked_insert_sort(mut array, a, b)
 }
 
+[inline]
 pub fn sort[T](mut array []T, a int, b int) {
 	median_of_sixteen_aqsort(mut array, a, b, int(2 * math.log2(b - a)), false)
 }
 
 [inline]
+[direct_array_access]
 fn multi_swap[T](mut array []T, a int, b int, l int) {
 	for i in 0 .. l {
 		swap(mut array, a + i, b + i)
@@ -267,6 +280,7 @@ fn multi_swap[T](mut array []T, a int, b int, l int) {
 }
 
 [inline]
+[direct_array_access]
 fn multi_swap_bw[T](mut array []T, a int, b int, l int) {
 	for i := l - 1; i >= 0; i-- {
 		swap(mut array, a + i, b + i)
@@ -274,6 +288,7 @@ fn multi_swap_bw[T](mut array []T, a int, b int, l int) {
 }
 
 [inline]
+[direct_array_access]
 fn insert_to[T](mut array []T, from int, to int) {
 	tmp := array[from]
 	for i := from - 1; i >= to; i-- {
@@ -283,6 +298,7 @@ fn insert_to[T](mut array []T, from int, to int) {
 }
 
 [inline]
+[direct_array_access]
 fn insert_to_bw[T](mut array []T, from int, to int) {
 	tmp := array[from]
 	for i in from .. to {
@@ -292,6 +308,7 @@ fn insert_to_bw[T](mut array []T, from int, to int) {
 }
 
 [inline]
+[direct_array_access]
 fn rotate[T](mut array []T, s int, m int, e int) {
 	mut a := s
 	mut b := e
@@ -313,6 +330,7 @@ fn rotate[T](mut array []T, s int, m int, e int) {
 	}
 }
 
+[direct_array_access]
 fn binsearch[T](array []T, s int, e int, val T, l bool) int {
 	mut a   := s
 	mut b   := e
@@ -337,6 +355,7 @@ fn binsearch[T](array []T, s int, e int, val T, l bool) int {
 	return a
 }
 
+[direct_array_access]
 fn insert_sort[T](mut array []T, a int, b int) {
 	for i in a + 1 .. b {
 		if array[i] < array[i - 1] {
@@ -346,6 +365,7 @@ fn insert_sort[T](mut array []T, a int, b int) {
 	}
 }
 
+[direct_array_access]
 fn merge_up[T](mut array []T, a int, m int, b int) {
 	mut aux := []T{len: m - a}
 
@@ -376,6 +396,7 @@ fn merge_up[T](mut array []T, a int, m int, b int) {
 	}
 }
 
+[direct_array_access]
 fn merge_down[T](mut array []T, a int, m int, b int) {
 	mut aux := []T{len: b - m}
 
@@ -407,6 +428,7 @@ fn merge_down[T](mut array []T, a int, m int, b int) {
 }
 
 [inline]
+[direct_array_access]
 fn check_bounds[T](mut array []T, a int, m int, b int) bool {
 	if array[m - 1] <= array[m] {
 		return true
@@ -418,6 +440,7 @@ fn check_bounds[T](mut array []T, a int, m int, b int) bool {
 	return false
 }
 
+[direct_array_access]
 fn merge_inplace[T](mut array []T, a int, m int, b int) {
 	if m - a <= b - m {
 		mut i := a
@@ -450,6 +473,7 @@ fn merge_inplace[T](mut array []T, a int, m int, b int) {
 	}
 }
 
+[direct_array_access]
 fn merge[T](mut array []T, s int, m int, e int) {
 	if check_bounds(mut array, s, m, e) {
 		return
@@ -489,6 +513,7 @@ fn get_reversed_runs[T](mut array []T, a int, b int, limit int) bool {
 	return i == b
 }
 
+[direct_array_access]
 pub fn stable_sort[T](mut array []T, a int, b int) {
 	if get_reversed_runs(mut array, a, b, 8) {
 		return
@@ -522,6 +547,7 @@ fn find_min_max[T](mut array []T, a int, b int) (T, T) {
 	return min, max
 }
 
+[direct_array_access]
 pub fn static_sort[T](mut array []T, a int, b int, get fn (T) f32) {
 	min, max := find_min_max(mut array, a, b)
 
