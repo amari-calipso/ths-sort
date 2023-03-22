@@ -547,7 +547,6 @@ fn find_min_max[T](mut array []T, a int, b int) (T, T) {
 	return min, max
 }
 
-[direct_array_access]
 pub fn static_sort[T](mut array []T, a int, b int, get fn (T) f32) {
 	min, max := find_min_max(mut array, a, b)
 
