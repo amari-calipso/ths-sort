@@ -275,3 +275,32 @@ fn rotate<T: SortType>(array: &mut [T], mut a: usize, m: usize, mut b: usize) {
     }
 }
 
+fn binsearch<T: SortType>(array: &mut [T], mut a: usize, mut b: usize, val: T, l: bool) -> usize {
+    while a < b {
+        let m = a + ((b - a) / 2);
+
+        let cmp = if l {
+            val.cmp(&array[m]).is_le()
+        } else {
+            val.cmp(&array[m]) == Less
+        };
+
+        if cmp {
+            b = m;
+        } else {
+            a = m + 1;
+        }
+    }
+
+    return a;
+}
+
+fn insert_sort<T: SortType>(array: &mut [T], a: usize, b: usize) {
+    for i in a + 1 .. b {
+        if array[i].cmp(&array[i - 1]) == Less {
+            let k = binsearch(array, a, i - 1, array[i], false);
+            insert_to(array, i, k);
+        }
+    }
+}
+
