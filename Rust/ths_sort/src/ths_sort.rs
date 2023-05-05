@@ -1,6 +1,6 @@
-use std::{cmp::Ordering::{Less, Equal, Greater}, ops::Div};
+use std::cmp::Ordering::{Less, Equal, Greater};
 
-use num_traits::{Num, NumOps};
+use num_traits::Num;
 
 pub trait SortType: Ord + Copy {}
 pub trait NumType: SortType + Num {}
