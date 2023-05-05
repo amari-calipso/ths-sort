@@ -1,4 +1,4 @@
-use std::cmp::Ordering::{Less, Equal, Greater};
+use std::cmp::Ordering::{Less, Greater};
 
 use num_traits::Num;
 
@@ -71,6 +71,7 @@ fn unchecked_insertion_sort<T: SortType>(array: &mut [T], a: usize, b: usize) {
             array[j + 1] = array[j];
             j -= 1;
         }
+        array[j + 1] = key;
     }
 }
 
@@ -79,40 +80,37 @@ fn shell_sort<T: SortType>(array: &mut [T], a: usize, b: usize) {
         for i in a + h .. b {
             let key = array[i].clone();
 
-            let mut j = i;
-            while j >= a + h && array[j - h].cmp(&key) == Greater {
-                array[j] = array[j - h];
-                j -= h;
+            let mut j = i as isize;
+            while j >= (a + h) as isize && array[j as usize - h].cmp(&key) == Greater {
+                array[j as usize] = array[j as usize - h];
+                j -= h as isize;
             }
-            array[j] = key;
+            array[j as usize] = key;
         }
     }
 }
 
-#[allow(unreachable_code)]
 fn partition<T: SortType>(array: &mut [T], a: usize, b: usize, p: usize) -> usize {
-    let mut i = a - 1;
-    let mut j = b;
+    let mut i = a as isize - 1;
+    let mut j = b as isize;
 
     loop {
         i += 1;
-        while i < b && array[i].cmp(&array[p]) == Less {
+        while i < b as isize && array[i as usize].cmp(&array[p]) == Less {
             i += 1;
         }
 
         j -= 1;
-        while j >= a && array[j].cmp(&array[p]) == Greater {
+        while j >= a as isize && array[j as usize].cmp(&array[p]) == Greater {
             j -= 1;
         }
 
-        if i < j {
-            array.swap(i, j);
+        if (i as isize) < j {
+            array.swap(i as usize, j as usize);
         } else {
-            return j;
+            return j as usize;
         }
     }
-
-    return a;
 }
 
 #[inline]
@@ -127,7 +125,7 @@ fn comp_swap<T: SortType>(array: &mut [T], a: usize, b: usize, g: usize, s: usiz
 
 fn median_of_three<T: SortType>(array: &mut [T], a: usize, mut b: usize) {
     b -= 1;
-    let m = a + (b - a) / 2;
+    let m = a + ((b - a) / 2);
 
     comp_swap(array, a, m, 1, 0);
     if array[m].cmp(&array[b]) == Greater {
@@ -206,6 +204,9 @@ fn median_of_sixteen_aqsort<T: SortType>(array: &mut [T], mut a: usize, mut b: u
                     median_of_sixteen_aqsort(array, p + 1, b, d - 1, true);
                     b = p;
                 }
+
+                median_of_sixteen(array, a, b);
+                p = partition(array, a + 1, b, a);
             } else {
                 shell_sort(array, a, b);
                 return;
@@ -260,21 +261,21 @@ fn insert_to_bw<T: SortType>(array: &mut [T], from: usize, to: usize) {
 }
 
 #[inline]
-fn rotate<T: SortType>(array: &mut [T], mut a: usize, m: usize, mut b: usize) {
+fn rotate<T: SortType>(array: &mut [T], mut a: isize, m: isize, mut b: isize) {
     while b - m > 1 && m - a > 1 {
         if b - m < m - a {
-            multi_swap(array, a, m, b - m);
+            multi_swap(array, a as usize, m as usize, (b - m) as usize);
             a += b - m;
         } else {
-            multi_swap_bw(array, a, b - (m - a), m - a);
+            multi_swap_bw(array, a as usize, (b - (m - a)) as usize, (m - a) as usize);
             b -= m - a;
         }
     }
 
     if b - m == 1 {
-        insert_to(array, m, a);
+        insert_to(array, m as usize, a as usize);
     } else if m - a == 1 {
-        insert_to_bw(array, a, b - 1);
+        insert_to_bw(array, a as usize, (b - 1) as usize);
     }
 }
 
@@ -311,8 +312,8 @@ fn merge_up<T: SortType>(array: &mut [T], a: usize, m: usize, b: usize) {
     let len = m - a;
     let mut aux: Vec<T> = Vec::with_capacity(len);
 
-    for i in 0 .. len {
-        aux[i] = array[i + a];
+    for i in a .. m {
+        aux.push(array[i]);
     }
 
     let mut l = a;
@@ -341,27 +342,27 @@ fn merge_down<T: SortType>(array: &mut [T], a: usize, m: usize, b: usize) {
     let len = b - m;
     let mut aux: Vec<T> = Vec::with_capacity(len);
 
-    for i in 0 .. len {
-        aux[i] = array[i + m];
+    for i in m .. b {
+        aux.push(array[i]);
     }
 
-    let mut buf = len - 1;
-    let mut l = m - 1;
-    let mut r = b - 1;
+    let mut buf = (len - 1) as isize;
+    let mut l = (m - 1) as isize;
+    let mut r = (b - 1) as isize;
 
-    while r > l && l >= a {
-        if aux[buf].cmp(&array[l]).is_ge() {
-            array[r] = aux[buf];
+    while r > l && l >= a as isize {
+        if aux[buf as usize].cmp(&array[l as usize]).is_ge() {
+            array[r as usize] = aux[buf as usize];
             buf -= 1;
         } else {
-            array[r] = array[l];
+            array[r as usize] = array[l as usize];
             l -= 1;
         }
         r -= 1;
     }
 
     while r > l {
-        array[r] = aux[buf];
+        array[r as usize] = aux[buf as usize];
         r -= 1;
         buf -= 1;
     }
@@ -372,7 +373,7 @@ fn check_bounds<T: SortType>(array: &mut [T], a: usize, m: usize, b: usize) -> b
     if array[m - 1].cmp(&array[m]).is_le() {
         return true;
     } else if array[a].cmp(&array[b - 1]) == Greater {
-        rotate(array, a, m, b);
+        rotate(array, a as isize, m as isize, b as isize);
         return true;
     }
 
@@ -387,7 +388,7 @@ fn merge_inplace<T: SortType>(array: &mut [T], a: usize, m: usize, b: usize) {
         while i < j && j < b {
             if array[i].cmp(&array[j]) == Greater {
                 let k = binsearch(array, j, b, array[i], true);
-                rotate(array, i, j, k);
+                rotate(array, i as isize, j as isize, k as isize);
                 i += k - j;
                 j = k;
             } else {
@@ -395,15 +396,15 @@ fn merge_inplace<T: SortType>(array: &mut [T], a: usize, m: usize, b: usize) {
             }
         }
     } else {
-        let mut i = m - 1;
-        let mut j = b - 1;
+        let mut i = (m - 1) as isize;
+        let mut j = (b - 1) as isize;
 
-        while j > i && i >= a {
-            if array[i].cmp(&array[j]) == Greater {
-                let k = binsearch(array, a, i, array[j], false);
-                rotate(array, k, i + 1, j + 1);
-                j -= i + 1 - k;
-                i = k - 1;
+        while j > i && i >= a as isize {
+            if array[i as usize].cmp(&array[j as usize]) == Greater {
+                let k = binsearch(array, a, i as usize, array[j as usize], false);
+                rotate(array, k as isize, i + 1, j + 1);
+                j -= i + 1 - k as isize;
+                i = k as isize - 1;
             } else {
                 j -= 1;
             }
@@ -441,6 +442,8 @@ fn get_reversed_runs<T: SortType>(array: &mut [T], a: usize, b: usize, limit: us
         if array[i].cmp(&array[i + 1]).is_le() {
             break;
         }
+
+        i += 1;
     }
 
     if i - a > limit {
@@ -452,7 +455,7 @@ fn get_reversed_runs<T: SortType>(array: &mut [T], a: usize, b: usize, limit: us
 
 pub fn stable_sort<T: SortType>(array: &mut [T], a: usize, b: usize) {
     if get_reversed_runs(array, a, b, 8) {
-        return
+        return;
     }
 
     if b - a > 32 {
@@ -466,7 +469,6 @@ pub fn stable_sort<T: SortType>(array: &mut [T], a: usize, b: usize) {
         insert_sort(array, a, b);
     }
 }
-
 
 
 #[inline]
