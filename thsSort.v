@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 thatsOven
+Copyright (c) 2021 Amari Calipso
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -189,7 +189,7 @@ fn median_of_sixteen[T](mut array []T, a int, b int) {
 [direct_array_access]
 fn get_sorted_runs[T](mut array []T, a int, b int) bool {
     mut rs := true
-    mut s  := true 
+    mut s  := true
 
     for i in a .. b - 1 {
         if array[i] > array[i + 1] {
@@ -216,7 +216,7 @@ fn median_of_sixteen_aqsort[T](mut array []T, s int, e int, depth int, unbalance
     mut a := s
     mut b := e
     mut d := depth
-    
+
     for b - a > 16 {
         if get_sorted_runs(mut array, a, b) {
             return
@@ -231,7 +231,7 @@ fn median_of_sixteen_aqsort[T](mut array []T, s int, e int, depth int, unbalance
         if !unbalanced {
             median_of_three(mut array, a, b)
             p = partition(mut array, a, b, a)
-        } 
+        }
 
         l := p - a
         r := b - (p + 1)
